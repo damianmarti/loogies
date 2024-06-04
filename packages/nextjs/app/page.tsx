@@ -59,6 +59,7 @@ const Home: NextPage = () => {
       setLoadingLoogies(false);
     };
     updateAllLoogies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalSupply, page]);
 
   return (

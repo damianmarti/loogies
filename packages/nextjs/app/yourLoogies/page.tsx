@@ -9,7 +9,7 @@ import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract 
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
-  const [allLoogies, setAllLoogies] = useState<any[]>();
+  const [yourLoogies, setYourLoogies] = useState<any[]>();
   const [loadingLoogies, setLoadingLoogies] = useState(true);
 
   const { data: price } = useScaffoldReadContract({
@@ -37,11 +37,11 @@ const Home: NextPage = () => {
   useEffect(() => {
     const updateAllLoogies = async () => {
       setLoadingLoogies(true);
-      if (contract && balance) {
+      if (contract && balance && connectedAddress) {
         const collectibleUpdate = [];
         for (let tokenIndex = 0n; tokenIndex < balance; tokenIndex++) {
           try {
-            const tokenId = await contract.read.tokenByIndex([tokenIndex]);
+            const tokenId = await contract.read.tokenOfOwnerByIndex([connectedAddress, tokenIndex]);
             const tokenURI = await contract.read.tokenURI([tokenId]);
             const jsonManifestString = atob(tokenURI.substring(29));
 
@@ -56,12 +56,13 @@ const Home: NextPage = () => {
           }
         }
         console.log("Collectible Update: ", collectibleUpdate);
-        setAllLoogies(collectibleUpdate);
+        setYourLoogies(collectibleUpdate);
       }
       setLoadingLoogies(false);
     };
     updateAllLoogies();
-  }, [balance]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balance, connectedAddress]);
 
   return (
     <>
@@ -90,12 +91,12 @@ const Home: NextPage = () => {
             <p>{totalSupply ? (3728n - totalSupply).toString() : "-"} Loogies left</p>
           </div>
           <div className="flex justify-center items-center space-x-2">
-            {loadingLoogies || !allLoogies ? (
+            {loadingLoogies || !yourLoogies ? (
               <p className="my-2 font-medium">Loading...</p>
             ) : (
               <div>
                 <div className="grid grid-cols-3 gap-4">
-                  {allLoogies.map(loogie => {
+                  {yourLoogies.map(loogie => {
                     return (
                       <div
                         key={loogie.id}
