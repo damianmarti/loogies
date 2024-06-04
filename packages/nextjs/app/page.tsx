@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import type { NextPage } from "next";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
@@ -112,7 +113,7 @@ const Home: NextPage = () => {
                         className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl"
                       >
                         <h2 className="text-xl font-bold">{loogie.name}</h2>
-                        <img src={loogie.image} alt={loogie.name} className="w-48 h-48" />
+                        <Image src={loogie.image} alt={loogie.name} width="300" height="300" />
                         <p>{loogie.description}</p>
                         <Address address={loogie.owner} />
                       </div>
