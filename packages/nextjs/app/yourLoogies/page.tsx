@@ -4,15 +4,12 @@ import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
-import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
   const [allLoogies, setAllLoogies] = useState<any[]>();
-  const [page, setPage] = useState(1n);
   const [loadingLoogies, setLoadingLoogies] = useState(true);
-  const perPage = 9n;
 
   const { data: price } = useScaffoldReadContract({
     contractName: "YourCollectible",
@@ -24,6 +21,12 @@ const Home: NextPage = () => {
     functionName: "totalSupply",
   });
 
+  const { data: balance } = useScaffoldReadContract({
+    contractName: "YourCollectible",
+    functionName: "balanceOf",
+    args: [connectedAddress],
+  });
+
   const { writeContractAsync } = useScaffoldWriteContract("YourCollectible");
 
   const { data: contract } = useScaffoldContract({
@@ -33,10 +36,9 @@ const Home: NextPage = () => {
   useEffect(() => {
     const updateAllLoogies = async () => {
       setLoadingLoogies(true);
-      if (contract && totalSupply) {
+      if (contract && balance) {
         const collectibleUpdate = [];
-        const startIndex = totalSupply - 1n - perPage * (page - 1n);
-        for (let tokenIndex = startIndex; tokenIndex > startIndex - perPage && tokenIndex >= 0; tokenIndex--) {
+        for (let tokenIndex = 0n; tokenIndex < balance; tokenIndex++) {
           try {
             const tokenId = await contract.read.tokenByIndex([tokenIndex]);
             const tokenURI = await contract.read.tokenURI([tokenId]);
@@ -58,25 +60,15 @@ const Home: NextPage = () => {
       setLoadingLoogies(false);
     };
     updateAllLoogies();
-  }, [totalSupply, page]);
+  }, [balance]);
 
   return (
     <>
       <div className="flex items-center flex-col flex-grow pt-10">
         <div className="px-5">
           <h1 className="text-center">
-            <span className="block text-4xl font-bold">OptimisticLoogies</span>
-            <span className="block text-2xl mb-2">Loogies with a smile :)</span>
+            <span className="block text-4xl font-bold">Your Loogies</span>
           </h1>
-          <div className="text-center">
-            <p>Only 3728 Optimistic Loogies available on a price curve increasing 0.2% with each new mint.</p>
-            <p>
-              Double the supply of the{" "}
-              <a href="https://loogies.io/" target="_blank">
-                Original Ethereum Mainnet Loogies
-              </a>
-            </p>
-          </div>
           <div className="flex flex-col justify-center items-center space-x-2">
             <button
               onClick={async () => {
@@ -96,9 +88,6 @@ const Home: NextPage = () => {
             </button>
             <p>{totalSupply ? (3728n - totalSupply).toString() : "-"} Loogies left</p>
           </div>
-        </div>
-
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
           <div className="flex justify-center items-center space-x-2">
             {loadingLoogies || !allLoogies ? (
               <p className="my-2 font-medium">Loading...</p>
@@ -114,25 +103,9 @@ const Home: NextPage = () => {
                         <h2 className="text-xl font-bold">{loogie.name}</h2>
                         <img src={loogie.image} alt={loogie.name} className="w-48 h-48" />
                         <p>{loogie.description}</p>
-                        <Address address={loogie.owner} />
                       </div>
                     );
                   })}
-                </div>
-                <div className="flex justify-center mt-8">
-                  <div className="join">
-                    {page > 1n && (
-                      <button className="join-item btn" onClick={() => setPage(page - 1n)}>
-                        «
-                      </button>
-                    )}
-                    <button className="join-item btn btn-disabled">Page {page.toString()}</button>
-                    {totalSupply !== undefined && totalSupply > page * perPage && (
-                      <button className="join-item btn" onClick={() => setPage(page + 1n)}>
-                        »
-                      </button>
-                    )}
-                  </div>
                 </div>
               </div>
             )}
