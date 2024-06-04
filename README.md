@@ -1,3 +1,19 @@
+# OptimisticLoogies
+
+![208145278-3d7783d3-de17-4b55-95b6-99e40fbe8fcd](https://github.com/damianmarti/loogies/assets/466652/ee2b1f9c-e30c-485b-862b-faaaaf95296b)
+
+This branch shows how to set up an SVG NFT contract so that other NFTs can use it in their SVG code. This leads to an easy composition of SVG NFTs. More information at [ERC-4883: Composable SVG NFT](https://eips.ethereum.org/EIPS/eip-4883)
+
+Take a look at YourCollectible.sol at packages/hardhat/contracts. It describes an SVG NFT that is defined by three parameters: color, chubbiness, and mouthLength randomly generated at mint. 
+
+It exposes a function:
+
+```function renderTokenById(uint256 id) public view returns (string memory)```
+
+It returns the relevant SVG that be embedded in other SVG code for rendering.
+
+Original Demo Video: https://youtu.be/PiwJsoURECg?t=542
+
 # 🏗 Scaffold-ETH 2
 
 <h4 align="center">
