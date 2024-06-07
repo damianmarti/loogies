@@ -62,7 +62,7 @@ const Home: NextPage = () => {
     };
     updateAllLoogies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [balance, connectedAddress]);
+  }, [balance, connectedAddress, Boolean(contract)]);
 
   return (
     <>

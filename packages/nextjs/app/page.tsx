@@ -60,7 +60,7 @@ const Home: NextPage = () => {
     };
     updateAllLoogies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalSupply, page]);
+  }, [totalSupply, page, Boolean(contract)]);
 
   return (
     <>
